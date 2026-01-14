@@ -1,0 +1,88 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# PyCharm
+.idea/
+
+# VSCode
+.vscode/
+
+# Data files (large files should not be committed)
+data/raw/*.zip
+data/raw/*.tar.gz
+data/raw/*.csv
+data/raw/*.json
+data/raw/*.nii
+data/raw/*.nii.gz
+data/raw/*.dcm
+data/raw/*.dicom
+data/processed/*.csv
+data/processed/*.json
+data/processed/*.npy
+data/processed/*.pkl
+
+# Model files
+models/*.pth
+models/*.h5
+models/*.pb
+models/*.onnx
+*.weights
+
+# Results
+results/**/*.png
+results/**/*.jpg
+results/**/*.pdf
+
+# Kaggle
+.kaggle/
+
+# Environment variables
+.env
+.env.local
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Submission files (until ready)
+submission/*.mp4
+submission/*.mov
