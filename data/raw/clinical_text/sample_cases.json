@@ -1,0 +1,69 @@
+{
+  "cases": [
+    {
+      "id": "case_001",
+      "type": "chest_pain",
+      "patient": {
+        "age": 65,
+        "sex": "M",
+        "history": ["hypertension", "diabetes", "hyperlipidemia"]
+      },
+      "presentation": "65-year-old male with substernal chest pain for 2 hours, radiating to left arm. Associated with shortness of breath and diaphoresis.",
+      "vitals": {
+        "BP": "160/95",
+        "HR": 105,
+        "RR": 22,
+        "SpO2": "89% on room air",
+        "Temp": "37.2°C"
+      },
+      "labs": {
+        "troponin": "0.8 ng/mL (elevated)",
+        "BNP": "450 pg/mL",
+        "CK-MB": "elevated"
+      },
+      "question": "What is the most likely diagnosis and recommended immediate management?"
+    },
+    {
+      "id": "case_002",
+      "type": "respiratory",
+      "patient": {
+        "age": 45,
+        "sex": "F",
+        "history": ["asthma", "seasonal allergies"]
+      },
+      "presentation": "Worsening dyspnea over 3 days, productive cough with green sputum, fever to 101°F.",
+      "vitals": {
+        "BP": "125/80",
+        "HR": 98,
+        "RR": 24,
+        "SpO2": "91% on room air",
+        "Temp": "38.3°C"
+      },
+      "labs": {
+        "WBC": "15,000/μL with left shift",
+        "CRP": "12 mg/dL",
+        "procalcitonin": "0.8 ng/mL"
+      },
+      "imaging": "Chest X-ray shows right lower lobe consolidation",
+      "question": "Interpret the findings and recommend treatment."
+    },
+    {
+      "id": "case_003",
+      "type": "oncology",
+      "patient": {
+        "age": 58,
+        "sex": "M",
+        "history": ["40 pack-year smoking history"]
+      },
+      "presentation": "Persistent cough for 8 weeks, unintentional 15 lb weight loss, hemoptysis.",
+      "vitals": {
+        "BP": "130/85",
+        "HR": 88,
+        "RR": 18,
+        "SpO2": "94% on room air"
+      },
+      "imaging": "CT chest shows 3.2 cm spiculated mass in right upper lobe with hilar lymphadenopathy",
+      "question": "Describe findings, differential diagnosis, and recommended next steps."
+    }
+  ]
+}
