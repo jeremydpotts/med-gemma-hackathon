@@ -1,0 +1,151 @@
+[
+  {
+    "case_id": "SYNTH_CXR_001",
+    "description": "Synthetic normal chest X-ray case",
+    "image_type": "chest_xray",
+    "modality": "CR",
+    "view": "PA",
+    "expected_findings": ["normal", "clear lungs", "normal heart size"],
+    "expected_impression": "No acute cardiopulmonary abnormality",
+    "confidence_threshold": 0.75,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_CXR_002",
+    "description": "Synthetic cardiomegaly case",
+    "image_type": "chest_xray",
+    "modality": "CR",
+    "view": "PA",
+    "expected_findings": ["cardiomegaly", "enlarged heart"],
+    "expected_impression": "Cardiomegaly",
+    "confidence_threshold": 0.65,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_CXR_003",
+    "description": "Synthetic pneumonia case",
+    "image_type": "chest_xray",
+    "modality": "CR",
+    "view": "PA",
+    "expected_findings": ["pneumonia", "infiltrate", "consolidation", "opacity"],
+    "expected_impression": "Pneumonia or consolidation",
+    "confidence_threshold": 0.60,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_CXR_004",
+    "description": "Synthetic pleural effusion case",
+    "image_type": "chest_xray",
+    "modality": "CR",
+    "view": "PA",
+    "expected_findings": ["pleural effusion", "effusion", "costophrenic angle blunting"],
+    "expected_impression": "Pleural effusion",
+    "confidence_threshold": 0.60,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_CXR_005",
+    "description": "Synthetic pneumothorax case",
+    "image_type": "chest_xray",
+    "modality": "CR",
+    "view": "PA",
+    "expected_findings": ["pneumothorax", "collapsed lung"],
+    "expected_impression": "Pneumothorax",
+    "confidence_threshold": 0.70,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_CXR_006",
+    "description": "Synthetic pulmonary nodule case",
+    "image_type": "chest_xray",
+    "modality": "CR",
+    "view": "PA",
+    "expected_findings": ["nodule", "mass", "lesion"],
+    "expected_impression": "Pulmonary nodule - recommend CT for further evaluation",
+    "confidence_threshold": 0.55,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_CXR_007",
+    "description": "Synthetic atelectasis case",
+    "image_type": "chest_xray",
+    "modality": "CR",
+    "view": "PA",
+    "expected_findings": ["atelectasis", "volume loss"],
+    "expected_impression": "Atelectasis",
+    "confidence_threshold": 0.60,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_CT_001",
+    "description": "Synthetic normal chest CT case",
+    "image_type": "ct_volume",
+    "modality": "CT",
+    "body_part": "CHEST",
+    "expected_findings": ["normal", "no significant abnormality"],
+    "expected_measurements": {
+      "lung_volume_present": true
+    },
+    "confidence_threshold": 0.70,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_CT_002",
+    "description": "Synthetic lung nodule CT case",
+    "image_type": "ct_volume",
+    "modality": "CT",
+    "body_part": "CHEST",
+    "expected_findings": ["nodule", "pulmonary nodule"],
+    "expected_measurements": {
+      "nodule_size_mm": 8,
+      "nodule_location": "right upper lobe"
+    },
+    "confidence_threshold": 0.65,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_LONG_001",
+    "description": "Synthetic longitudinal stable case",
+    "image_type": "longitudinal",
+    "modality": "CT",
+    "timepoints": 2,
+    "expected_comparison": "stable",
+    "expected_changes": [],
+    "confidence_threshold": 0.70,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_LONG_002",
+    "description": "Synthetic longitudinal progression case",
+    "image_type": "longitudinal",
+    "modality": "CT",
+    "timepoints": 2,
+    "expected_comparison": "progression",
+    "expected_changes": ["nodule growth", "size increase"],
+    "confidence_threshold": 0.60,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  },
+  {
+    "case_id": "SYNTH_LONG_003",
+    "description": "Synthetic longitudinal improvement case",
+    "image_type": "longitudinal",
+    "modality": "CT",
+    "timepoints": 3,
+    "expected_comparison": "improvement",
+    "expected_changes": ["decreased consolidation", "resolving"],
+    "confidence_threshold": 0.60,
+    "is_synthetic": true,
+    "source": "Synthetically generated for testing"
+  }
+]
