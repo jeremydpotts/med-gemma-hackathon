@@ -1,0 +1,384 @@
+{
+  "_metadata": {
+    "description": "Synthetic longitudinal test cases for RadAssist Pro",
+    "version": "1.0",
+    "created": "2026-01-18",
+    "purpose": "Testing longitudinal comparison capabilities of MedGemma 1.5",
+    "disclaimer": "SYNTHETIC DATA - For research/testing purposes only. Not real patient data."
+  },
+  "longitudinal_series": [
+    {
+      "series_id": "LONG_001",
+      "case_name": "Pneumonia Resolution",
+      "description": "Serial chest X-rays showing resolution of community-acquired pneumonia",
+      "clinical_context": "58-year-old male with community-acquired pneumonia, treated with antibiotics",
+      "expected_outcome": "improvement",
+      "timepoints": [
+        {
+          "timepoint_id": "T0",
+          "date": "2026-01-01",
+          "day_offset": 0,
+          "study_type": "chest_xray",
+          "clinical_note": "Initial presentation with fever, cough, dyspnea. Started on azithromycin.",
+          "synthetic_findings": [
+            "Right lower lobe consolidation with air bronchograms",
+            "Small right pleural effusion",
+            "Heart size normal",
+            "No pneumothorax"
+          ],
+          "impression": "Right lower lobe pneumonia with small parapneumonic effusion"
+        },
+        {
+          "timepoint_id": "T1",
+          "date": "2026-01-08",
+          "day_offset": 7,
+          "study_type": "chest_xray",
+          "clinical_note": "Follow-up after 7 days of antibiotic therapy. Clinically improving.",
+          "synthetic_findings": [
+            "Decreased right lower lobe consolidation",
+            "Resolving right pleural effusion",
+            "Heart size normal",
+            "No pneumothorax"
+          ],
+          "impression": "Improving right lower lobe pneumonia with decreasing effusion"
+        },
+        {
+          "timepoint_id": "T2",
+          "date": "2026-01-22",
+          "day_offset": 21,
+          "study_type": "chest_xray",
+          "clinical_note": "Follow-up after completing antibiotic course. Symptoms resolved.",
+          "synthetic_findings": [
+            "Near-complete resolution of right lower lobe opacity",
+            "No pleural effusion",
+            "Heart size normal",
+            "Lungs otherwise clear"
+          ],
+          "impression": "Near-complete resolution of right lower lobe pneumonia"
+        }
+      ],
+      "expected_changes": [
+        {
+          "from": "T0",
+          "to": "T1",
+          "change_type": "improvement",
+          "findings": ["Decreased consolidation", "Resolving effusion"]
+        },
+        {
+          "from": "T1",
+          "to": "T2",
+          "change_type": "improvement",
+          "findings": ["Near-complete resolution", "No residual effusion"]
+        }
+      ]
+    },
+    {
+      "series_id": "LONG_002",
+      "case_name": "Pulmonary Nodule Surveillance",
+      "description": "Serial CT scans monitoring a pulmonary nodule for lung cancer screening",
+      "clinical_context": "62-year-old female, former smoker (30 pack-years), incidentally discovered lung nodule",
+      "expected_outcome": "stable",
+      "timepoints": [
+        {
+          "timepoint_id": "T0",
+          "date": "2025-07-15",
+          "day_offset": 0,
+          "study_type": "ct_chest",
+          "clinical_note": "Incidental 6mm ground-glass nodule found on CT for other indication.",
+          "synthetic_findings": [
+            "6mm ground-glass nodule in right upper lobe",
+            "No solid component",
+            "No lymphadenopathy",
+            "No pleural effusion"
+          ],
+          "measurements": {
+            "nodule_size_mm": 6.0,
+            "nodule_location": "right upper lobe",
+            "nodule_type": "ground-glass"
+          },
+          "impression": "6mm ground-glass nodule RUL. Recommend 6-month follow-up CT."
+        },
+        {
+          "timepoint_id": "T1",
+          "date": "2026-01-15",
+          "day_offset": 184,
+          "study_type": "ct_chest",
+          "clinical_note": "6-month surveillance CT per Lung-RADS guidelines.",
+          "synthetic_findings": [
+            "Stable 6mm ground-glass nodule in right upper lobe",
+            "No interval change in size or attenuation",
+            "No new nodules",
+            "No lymphadenopathy"
+          ],
+          "measurements": {
+            "nodule_size_mm": 6.2,
+            "nodule_location": "right upper lobe",
+            "nodule_type": "ground-glass",
+            "volume_change_percent": 3.3
+          },
+          "impression": "Stable 6mm GGN RUL. Continued surveillance recommended."
+        }
+      ],
+      "expected_changes": [
+        {
+          "from": "T0",
+          "to": "T1",
+          "change_type": "stable",
+          "findings": ["No significant interval change", "Volume change <25%"]
+        }
+      ]
+    },
+    {
+      "series_id": "LONG_003",
+      "case_name": "Heart Failure Progression",
+      "description": "Serial chest X-rays showing progression of heart failure",
+      "clinical_context": "72-year-old male with known CHF, medication non-compliance",
+      "expected_outcome": "worsening",
+      "timepoints": [
+        {
+          "timepoint_id": "T0",
+          "date": "2025-12-01",
+          "day_offset": 0,
+          "study_type": "chest_xray",
+          "clinical_note": "Baseline chest X-ray, patient stable on diuretics.",
+          "synthetic_findings": [
+            "Cardiomegaly, stable",
+            "Mild pulmonary vascular congestion",
+            "No pleural effusion",
+            "No focal consolidation"
+          ],
+          "measurements": {
+            "cardiothoracic_ratio": 0.56
+          },
+          "impression": "Stable cardiomegaly with mild pulmonary vascular congestion"
+        },
+        {
+          "timepoint_id": "T1",
+          "date": "2026-01-15",
+          "day_offset": 45,
+          "study_type": "chest_xray",
+          "clinical_note": "Increased dyspnea, weight gain. Admitted for CHF exacerbation.",
+          "synthetic_findings": [
+            "Increased cardiomegaly",
+            "Moderate pulmonary edema with Kerley B lines",
+            "Bilateral pleural effusions, small to moderate",
+            "Perihilar haziness"
+          ],
+          "measurements": {
+            "cardiothoracic_ratio": 0.62
+          },
+          "impression": "Worsening CHF with pulmonary edema and bilateral pleural effusions"
+        },
+        {
+          "timepoint_id": "T2",
+          "date": "2026-01-18",
+          "day_offset": 48,
+          "study_type": "chest_xray",
+          "clinical_note": "After 3 days of IV diuretics. Clinically improved.",
+          "synthetic_findings": [
+            "Cardiomegaly, unchanged",
+            "Improved pulmonary edema",
+            "Decreased bilateral pleural effusions",
+            "Improved aeration"
+          ],
+          "measurements": {
+            "cardiothoracic_ratio": 0.60
+          },
+          "impression": "Improved pulmonary edema after diuresis. Residual small effusions."
+        }
+      ],
+      "expected_changes": [
+        {
+          "from": "T0",
+          "to": "T1",
+          "change_type": "worsening",
+          "findings": ["Increased cardiomegaly", "New pulmonary edema", "New effusions"]
+        },
+        {
+          "from": "T1",
+          "to": "T2",
+          "change_type": "improvement",
+          "findings": ["Decreased edema", "Decreased effusions"]
+        }
+      ]
+    },
+    {
+      "series_id": "LONG_004",
+      "case_name": "Post-Surgical Monitoring",
+      "description": "Serial chest X-rays after lung lobectomy for cancer",
+      "clinical_context": "65-year-old female, post-right upper lobectomy for stage IA NSCLC",
+      "expected_outcome": "improvement",
+      "timepoints": [
+        {
+          "timepoint_id": "T0",
+          "date": "2026-01-10",
+          "day_offset": 0,
+          "study_type": "chest_xray",
+          "clinical_note": "Post-operative day 1 after RUL lobectomy.",
+          "synthetic_findings": [
+            "Post-surgical changes right hemithorax",
+            "Right chest tube in place",
+            "Small right pneumothorax",
+            "Small right pleural effusion",
+            "Expected post-operative appearance"
+          ],
+          "impression": "Expected post-lobectomy changes with small pneumothorax"
+        },
+        {
+          "timepoint_id": "T1",
+          "date": "2026-01-13",
+          "day_offset": 3,
+          "study_type": "chest_xray",
+          "clinical_note": "Post-operative day 4. Chest tube output decreasing.",
+          "synthetic_findings": [
+            "Post-surgical changes right hemithorax",
+            "Right chest tube in place",
+            "Resolving pneumothorax",
+            "Stable small right pleural effusion",
+            "No new consolidation"
+          ],
+          "impression": "Resolving pneumothorax. Stable post-operative appearance."
+        },
+        {
+          "timepoint_id": "T2",
+          "date": "2026-01-15",
+          "day_offset": 5,
+          "study_type": "chest_xray",
+          "clinical_note": "Post-operative day 6. Chest tube removed.",
+          "synthetic_findings": [
+            "Post-surgical changes right hemithorax",
+            "Chest tube removed",
+            "No pneumothorax",
+            "Minimal residual right pleural effusion",
+            "No consolidation"
+          ],
+          "impression": "Satisfactory post-lobectomy appearance. No pneumothorax after tube removal."
+        }
+      ],
+      "expected_changes": [
+        {
+          "from": "T0",
+          "to": "T1",
+          "change_type": "improvement",
+          "findings": ["Resolving pneumothorax"]
+        },
+        {
+          "from": "T1",
+          "to": "T2",
+          "change_type": "improvement",
+          "findings": ["No pneumothorax", "Chest tube removed"]
+        }
+      ]
+    },
+    {
+      "series_id": "LONG_005",
+      "case_name": "Lung Nodule Growth",
+      "description": "Serial CT showing concerning growth of lung nodule",
+      "clinical_context": "68-year-old male, current smoker, surveillance of lung nodule",
+      "expected_outcome": "worsening",
+      "timepoints": [
+        {
+          "timepoint_id": "T0",
+          "date": "2025-06-01",
+          "day_offset": 0,
+          "study_type": "ct_chest",
+          "clinical_note": "Initial detection of solid lung nodule on screening CT.",
+          "synthetic_findings": [
+            "8mm solid nodule in left lower lobe",
+            "Spiculated margins",
+            "No lymphadenopathy",
+            "No pleural effusion"
+          ],
+          "measurements": {
+            "nodule_size_mm": 8.0,
+            "nodule_location": "left lower lobe",
+            "nodule_type": "solid",
+            "nodule_volume_mm3": 268
+          },
+          "impression": "8mm spiculated LLL nodule. Recommend 3-month follow-up."
+        },
+        {
+          "timepoint_id": "T1",
+          "date": "2025-09-01",
+          "day_offset": 92,
+          "study_type": "ct_chest",
+          "clinical_note": "3-month surveillance CT.",
+          "synthetic_findings": [
+            "Interval growth of left lower lobe nodule, now 11mm",
+            "Persistent spiculated margins",
+            "No lymphadenopathy",
+            "No new nodules"
+          ],
+          "measurements": {
+            "nodule_size_mm": 11.0,
+            "nodule_location": "left lower lobe",
+            "nodule_type": "solid",
+            "nodule_volume_mm3": 697,
+            "volume_doubling_time_days": 95
+          },
+          "impression": "Growing spiculated LLL nodule. Concerning for malignancy. Recommend biopsy."
+        },
+        {
+          "timepoint_id": "T2",
+          "date": "2025-12-01",
+          "day_offset": 183,
+          "study_type": "ct_chest",
+          "clinical_note": "Pre-surgical staging CT after biopsy confirmed adenocarcinoma.",
+          "synthetic_findings": [
+            "Known LLL adenocarcinoma, now 14mm",
+            "No mediastinal lymphadenopathy",
+            "No distant metastases in visualized field",
+            "No pleural effusion"
+          ],
+          "measurements": {
+            "nodule_size_mm": 14.0,
+            "nodule_location": "left lower lobe",
+            "nodule_type": "solid",
+            "nodule_volume_mm3": 1437
+          },
+          "impression": "Growing LLL adenocarcinoma. Stage IA per imaging. Surgical candidate."
+        }
+      ],
+      "expected_changes": [
+        {
+          "from": "T0",
+          "to": "T1",
+          "change_type": "worsening",
+          "findings": ["Interval nodule growth >25% volume", "VDT <400 days concerning"]
+        },
+        {
+          "from": "T1",
+          "to": "T2",
+          "change_type": "worsening",
+          "findings": ["Continued growth", "Now confirmed malignancy"]
+        }
+      ]
+    }
+  ],
+  "test_scenarios": [
+    {
+      "scenario_id": "TEST_IMPROVEMENT",
+      "description": "Test detection of improving findings",
+      "series_to_use": ["LONG_001", "LONG_004"],
+      "expected_result": "system should identify improvement trend"
+    },
+    {
+      "scenario_id": "TEST_STABILITY",
+      "description": "Test detection of stable findings",
+      "series_to_use": ["LONG_002"],
+      "expected_result": "system should identify stability and recommend continued surveillance"
+    },
+    {
+      "scenario_id": "TEST_WORSENING",
+      "description": "Test detection of worsening findings",
+      "series_to_use": ["LONG_003", "LONG_005"],
+      "expected_result": "system should identify worsening and recommend appropriate action"
+    },
+    {
+      "scenario_id": "TEST_MIXED",
+      "description": "Test detection of mixed trajectory (worsening then improving)",
+      "series_to_use": ["LONG_003"],
+      "expected_result": "system should identify initial worsening then improvement"
+    }
+  ]
+}
