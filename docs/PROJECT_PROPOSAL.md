@@ -1,25 +1,47 @@
 # RadAssist Pro - Project Proposal
 
-**Project:** AI-Powered Radiology Assistant with 3D & Longitudinal Capabilities
+**Project:** AI-Powered Longitudinal Change Detection & Summarization
 **Competition:** Med-Gemma Impact Challenge
 **Team Lead:** Jeremy Potts
 **Final Selection Date:** January 18, 2026 (Day 8)
 **Submission Target:** February 19, 2026
+**Last Updated:** January 21, 2026 (Competitive Analysis Update)
 
 ---
 
 ## Executive Summary
 
-RadAssist Pro is an AI-powered radiology assistant that leverages all three unique capabilities of MedGemma 1.5: 2D image analysis, 3D volumetric analysis, and longitudinal temporal comparison. This hybrid approach addresses the critical bottleneck in radiology workflows where the sheer volume of imaging studies leads to delayed diagnoses and missed findings.
+RadAssist Pro is the **first open-source AI application** that automatically detects, quantifies, and summarizes changes between sequential medical images - turning complex longitudinal comparisons into clear, actionable insights for radiologists and patients.
+
+**Innovation Focus:** While 2D chest X-ray analysis is a saturated market (42+ FDA-approved products), **AI-powered longitudinal change detection with natural language summaries** remains an underserved opportunity. RadAssist Pro fills this gap.
 
 **Key Differentiators:**
-- Only open-source solution with 3D volumetric medical imaging capabilities
-- Longitudinal comparison for tracking disease progression
+- **First** open-source tool for automated longitudinal change summarization
+- Natural language generation: "The nodule grew from 8mm to 11mm (37% increase)"
+- Patient-friendly progress reports alongside clinical documentation
 - Production-ready architecture with HIPAA compliance
-- FHIR-compliant structured output
+- Built on MedGemma 1.5's unique temporal comparison capabilities
 
 **Evaluation Score:** 84/100 (A Grade)
 **Selection Confidence:** 8/10 (High)
+
+---
+
+## Competitive Analysis Summary
+
+> **See full analysis:** [COMPETITIVE_ANALYSIS.md](COMPETITIVE_ANALYSIS.md)
+
+### Market Reality Check
+
+| Capability | Market Status | Our Strategy |
+|------------|--------------|--------------|
+| 2D Chest X-ray | **Saturated** (Lunit, Qure.ai, Oxipit) | Supporting feature only |
+| 3D Volumetric | **Competitive** (Pillar-0 outperforms MedGemma) | Deprioritized |
+| Longitudinal AI Comparison | **Underserved** | **PRIMARY DIFFERENTIATOR** |
+
+### Why Longitudinal is Our Edge
+
+Existing commercial products (Rad AI Continuity, Quantib) focus on **workflow management** (tracking follow-ups), not **AI-powered change detection and summarization**. RadAssist Pro generates actionable insights, not just alerts.
 
 ---
 
@@ -27,20 +49,22 @@ RadAssist Pro is an AI-powered radiology assistant that leverages all three uniq
 
 ### The Challenge
 
-Radiology departments worldwide face critical challenges:
+**Longitudinal comparison is the most time-consuming part of radiology workflow.**
 
-1. **Volume Crisis:** Average radiologist reads 50-70 studies per day, leading to fatigue and errors
-2. **Missed Findings:** 3-5% of significant findings are missed on initial read
-3. **Turnaround Delays:** Average report turnaround of 24-48 hours delays patient care
-4. **Longitudinal Tracking:** Manual comparison of prior studies is time-consuming and error-prone
-5. **3D Analysis Gap:** No open-source tools for 3D CT/MRI analysis exist
+Radiology departments face critical challenges with serial imaging:
 
-### Clinical Impact
+1. **Manual Comparison Burden:** Radiologists spend 15-30% of read time comparing to prior studies
+2. **Inconsistent Documentation:** Change descriptions vary widely between radiologists
+3. **Missed Progression:** Subtle changes across timepoints are frequently overlooked
+4. **Patient Communication Gap:** Patients receive complex reports without understanding their progress
+5. **No Automated Summarization:** Existing tools show images side-by-side but don't explain changes
 
-- Delayed cancer diagnoses due to missed nodules
-- Missed critical findings (pneumothorax, effusions) in emergency settings
-- Inconsistent longitudinal tracking of disease progression
-- Radiologist burnout and workforce shortage
+### Why This Matters
+
+- **Cancer surveillance:** 40% of lung cancer patients require serial CT monitoring
+- **Treatment response:** Oncology needs quantified change metrics, not subjective descriptions
+- **Chronic disease:** Heart failure, COPD patients need longitudinal tracking
+- **Patient engagement:** Patients deserve to understand "Am I getting better or worse?"
 
 ---
 
@@ -78,26 +102,34 @@ Radiology departments worldwide face critical challenges:
 
 ### MedGemma Capability Utilization
 
-| Capability | RadAssist Pro Usage | Competition Advantage |
-|------------|---------------------|----------------------|
-| **2D Analysis** | Chest X-ray interpretation | Baseline capability |
-| **3D Volumetric** | CT/MRI volume analysis | **Unique - no competitor can match** |
-| **Longitudinal** | Disease progression tracking | **Competitive moat** |
+| Capability | RadAssist Pro Usage | Strategic Priority |
+|------------|---------------------|-------------------|
+| **Longitudinal** | AI-powered change detection & summarization | **PRIMARY - Our differentiator** |
+| **2D Analysis** | Single image analysis (supporting) | Secondary - demonstrates MedGemma |
+| **3D Volumetric** | Future enhancement | Stretch - deprioritized per competitive analysis |
+
+**Why Longitudinal First:** MedGemma 1.5 shows 5% improvement on longitudinal benchmarks (MS-CXR-T: 66% vs 61%). This is the capability where MedGemma has the clearest advantage and where commercial market gaps exist.
 
 ---
 
 ## Feature Specification
 
-### MVP Features (Must Have)
+### MVP Features (Must Have) - REVISED
 
-1. **2D Chest X-ray Analysis**
-   - Upload single chest X-ray image
-   - Automated finding detection
-   - Confidence scores per finding
-   - Structured output format
+1. **Longitudinal Change Detection** (PRIMARY FEATURE)
+   - Upload two chest X-rays from different dates
+   - AI-powered automated change detection
+   - Natural language change summary generation
+   - Side-by-side visualization with difference highlighting
+   - Quantified measurements when possible ("grew from Xmm to Ymm")
 
-2. **Basic Report Generation**
-   - Standardized radiology report format
+2. **Basic 2D Analysis** (SUPPORTING FEATURE)
+   - Single image analysis to demonstrate MedGemma works
+   - Structured findings output
+   - Not the differentiator - keep simple
+
+3. **Comparison Report Generation**
+   - Standardized comparison report format
    - Findings and impression sections
    - Prominent AI disclaimer
    - Export to PDF/text
