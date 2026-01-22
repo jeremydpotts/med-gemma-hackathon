@@ -48,6 +48,19 @@ try:
 except ImportError:
     LONGITUDINAL_AVAILABLE = False
 
+# Import visualization module
+try:
+    from src.visualization.longitudinal_viz import (
+        create_timeline_chart,
+        create_growth_rate_chart,
+        create_vdt_gauge,
+        create_risk_summary_card,
+        create_all_visualizations
+    )
+    VISUALIZATION_AVAILABLE = True
+except ImportError:
+    VISUALIZATION_AVAILABLE = False
+
 
 # =============================================================================
 # Page Configuration
@@ -667,6 +680,44 @@ def render_demo_results_longitudinal():
     st.markdown("### 👥 Patient-Friendly Summary")
     st.markdown("*For patient portal or shared decision-making:*")
     st.success(analysis.patient_summary)
+
+    # Visualizations
+    if VISUALIZATION_AVAILABLE:
+        st.markdown("---")
+        st.markdown("### 📊 Visualizations")
+
+        viz_col1, viz_col2 = st.columns(2)
+
+        with viz_col1:
+            try:
+                fig = create_timeline_chart(measurements, analysis)
+                st.pyplot(fig)
+            except Exception as e:
+                st.info("Timeline chart unavailable")
+
+        with viz_col2:
+            try:
+                fig = create_growth_rate_chart(measurements)
+                st.pyplot(fig)
+            except Exception as e:
+                st.info("Growth rate chart unavailable")
+
+        viz_col3, viz_col4 = st.columns(2)
+
+        with viz_col3:
+            if analysis.volume_doubling_time_days:
+                try:
+                    fig = create_vdt_gauge(analysis.volume_doubling_time_days)
+                    st.pyplot(fig)
+                except Exception as e:
+                    st.info("VDT gauge unavailable")
+
+        with viz_col4:
+            try:
+                fig = create_risk_summary_card(analysis)
+                st.pyplot(fig)
+            except Exception as e:
+                st.info("Risk summary unavailable")
 
     # Key insight callout
     st.markdown("---")
