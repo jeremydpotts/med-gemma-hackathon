@@ -61,6 +61,22 @@ try:
 except ImportError:
     VISUALIZATION_AVAILABLE = False
 
+# Import image analysis pipeline
+try:
+    from src.core.image_analysis_pipeline import (
+        ImageAnalysisPipeline,
+        AnalysisPipelineConfig,
+        PipelineResult
+    )
+    from src.core.nodule_detector import (
+        NoduleDetector,
+        NoduleDetectorConfig,
+        DetectedNodule
+    )
+    PIPELINE_AVAILABLE = True
+except ImportError:
+    PIPELINE_AVAILABLE = False
+
 
 # =============================================================================
 # Page Configuration
@@ -266,6 +282,12 @@ if 'analysis_results' not in st.session_state:
 if 'pipeline' not in st.session_state:
     st.session_state.pipeline = None
 
+if 'image_pipeline' not in st.session_state:
+    st.session_state.image_pipeline = None
+
+if 'uploaded_scans' not in st.session_state:
+    st.session_state.uploaded_scans = []
+
 
 # =============================================================================
 # Helper Functions
@@ -301,6 +323,17 @@ def initialize_pipeline():
             st.session_state.pipeline = None
 
 
+def initialize_image_pipeline():
+    """Initialize the image analysis pipeline."""
+    if st.session_state.image_pipeline is None:
+        if PIPELINE_AVAILABLE:
+            config = AnalysisPipelineConfig(mock_mode=True)
+            st.session_state.image_pipeline = ImageAnalysisPipeline(config)
+        else:
+            st.warning("Image pipeline not available. Using demo mode.")
+            st.session_state.image_pipeline = None
+
+
 # =============================================================================
 # Sidebar
 # =============================================================================
@@ -315,7 +348,7 @@ def render_sidebar():
         st.markdown("### Analysis Mode")
         analysis_mode = st.radio(
             "Select analysis type:",
-            ["2D Image Analysis", "3D Volume Analysis", "Longitudinal Comparison"],
+            ["2D Image Analysis", "3D Volume Analysis", "Longitudinal Comparison", "CT Scan Series Upload"],
             help="Choose the type of analysis to perform"
         )
 
@@ -859,6 +892,343 @@ def render_analysis_results(report: 'AnalysisReport', settings: dict):
         )
 
 
+def render_ct_series_upload(settings: dict):
+    """Render CT scan series upload interface for longitudinal analysis."""
+    st.markdown("## 📂 CT Scan Series Upload")
+    st.markdown("""
+    **Upload sequential CT scans** for automated nodule detection and longitudinal analysis.
+    RadAssist Pro will detect nodules, measure them, and track changes over time.
+    """)
+
+    # Initialize pipeline
+    initialize_image_pipeline()
+
+    # Upload section
+    st.markdown("### 📤 Upload CT Scans")
+
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        # Multiple scan upload
+        num_scans = st.slider("Number of scans to upload", 2, 6, 4, key="num_ct_scans")
+
+        scans_data = []
+        for i in range(num_scans):
+            with st.expander(f"📁 Scan {i+1}", expanded=(i == 0)):
+                scan_date = st.date_input(
+                    f"Scan Date",
+                    datetime.now() - timedelta(days=180 * (num_scans - 1 - i)),
+                    key=f"ct_date_{i}"
+                )
+
+                uploaded_file = st.file_uploader(
+                    f"Upload CT Image/DICOM",
+                    type=['png', 'jpg', 'jpeg', 'dcm', 'nii', 'nii.gz'],
+                    key=f"ct_file_{i}",
+                    help="Upload a CT slice or volume"
+                )
+
+                if uploaded_file:
+                    st.success(f"✅ {uploaded_file.name}")
+                    scans_data.append({
+                        "date": scan_date,
+                        "file": uploaded_file,
+                        "filename": uploaded_file.name
+                    })
+
+    with col2:
+        st.markdown("### Patient Information")
+
+        clinical_context = st.text_area(
+            "Clinical Context",
+            placeholder="e.g., 58-year-old former smoker, history of lung nodule...",
+            key="ct_clinical_context"
+        )
+
+        nodule_location = st.selectbox(
+            "Known Nodule Location",
+            ["right upper lobe", "right middle lobe", "right lower lobe",
+             "left upper lobe", "left lower lobe", "Unknown/Detect automatically"],
+            key="ct_nodule_location"
+        )
+
+        st.markdown("### Analysis Options")
+        auto_detect = st.checkbox("Auto-detect nodules", value=True, key="ct_auto_detect")
+        compare_all = st.checkbox("Compare all timepoints", value=True, key="ct_compare_all")
+
+    # Manual entry option (for when images aren't available)
+    st.markdown("---")
+    with st.expander("📝 Manual Measurement Entry (Alternative)"):
+        st.info("If you don't have CT images, you can enter nodule measurements manually.")
+
+        manual_measurements = []
+        manual_cols = st.columns(4)
+
+        for i, col in enumerate(manual_cols):
+            with col:
+                st.markdown(f"**Timepoint {i+1}**")
+                m_date = st.date_input(
+                    "Date",
+                    datetime.now() - timedelta(days=180 * (3 - i)),
+                    key=f"manual_date_{i}"
+                )
+                m_size = st.number_input(
+                    "Size (mm)",
+                    min_value=1.0,
+                    max_value=50.0,
+                    value=6.0 + i * 0.5,
+                    step=0.1,
+                    key=f"manual_size_{i}"
+                )
+                manual_measurements.append({"date": m_date, "size_mm": m_size})
+
+    # Analyze button
+    st.markdown("---")
+
+    analyze_col1, analyze_col2 = st.columns(2)
+
+    with analyze_col1:
+        analyze_images = st.button(
+            "🔍 Analyze Uploaded Scans",
+            type="primary",
+            use_container_width=True,
+            disabled=len(scans_data) < 2
+        )
+
+    with analyze_col2:
+        analyze_manual = st.button(
+            "📊 Analyze Manual Measurements",
+            use_container_width=True
+        )
+
+    # Process uploaded scans
+    if analyze_images and len(scans_data) >= 2:
+        with st.spinner("🔬 Detecting nodules and analyzing changes..."):
+            # Save uploaded files temporarily and process
+            temp_paths = []
+            scan_dates = []
+
+            for scan in scans_data:
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmp:
+                    tmp.write(scan["file"].getvalue())
+                    temp_paths.append(tmp.name)
+                    scan_dates.append(datetime.combine(scan["date"], datetime.min.time()))
+
+            # Use the image pipeline
+            if st.session_state.image_pipeline:
+                location = nodule_location if nodule_location != "Unknown/Detect automatically" else None
+                result = st.session_state.image_pipeline.analyze_longitudinal(
+                    scans=list(zip(temp_paths, scan_dates)),
+                    clinical_context=clinical_context,
+                    nodule_location=location
+                )
+                render_pipeline_results(result, settings)
+            else:
+                st.error("Image pipeline not initialized")
+
+    # Process manual measurements
+    if analyze_manual:
+        with st.spinner("📊 Analyzing measurements..."):
+            if PIPELINE_AVAILABLE and st.session_state.image_pipeline:
+                # Convert manual measurements to pipeline format
+                measurements = [
+                    {
+                        "date": datetime.combine(m["date"], datetime.min.time()),
+                        "size_mm": m["size_mm"],
+                        "location": nodule_location if nodule_location != "Unknown/Detect automatically" else "right upper lobe"
+                    }
+                    for m in manual_measurements
+                ]
+
+                result = st.session_state.image_pipeline.analyze_with_manual_measurements(
+                    measurements=measurements,
+                    clinical_context=clinical_context
+                )
+                render_pipeline_results(result, settings)
+            elif LONGITUDINAL_AVAILABLE:
+                # Fallback to direct longitudinal analyzer
+                nodule_measurements = [
+                    NoduleMeasurement(
+                        datetime.combine(m["date"], datetime.min.time()),
+                        m["size_mm"],
+                        nodule_location if nodule_location != "Unknown/Detect automatically" else "right upper lobe",
+                        "solid"
+                    )
+                    for m in manual_measurements
+                ]
+                report = create_longitudinal_report(nodule_measurements, clinical_context)
+                render_longitudinal_report(report, settings)
+            else:
+                st.error("Analysis modules not available")
+
+
+def render_pipeline_results(result: 'PipelineResult', settings: dict):
+    """Render results from the image analysis pipeline."""
+    st.markdown("---")
+    st.success("✅ Analysis Complete")
+
+    # Detection summary
+    st.markdown("### 🔍 Detection Summary")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric("Scans Processed", result.scans_processed)
+
+    with col2:
+        nodule_count = len(result.detection_results[0].nodules) if result.detection_results else 0
+        st.metric("Nodules Detected", nodule_count)
+
+    with col3:
+        st.metric("Longitudinal Data", "Yes" if result.has_longitudinal else "No")
+
+    # Detection details
+    if result.detection_results:
+        st.markdown("### 📋 Detection Details")
+        for i, detection in enumerate(result.detection_results):
+            with st.expander(f"Scan {i+1}: {detection.scan_metadata.scan_date.strftime('%Y-%m-%d')}"):
+                st.write(f"**Modality:** {detection.scan_metadata.modality}")
+                if detection.nodules:
+                    for nodule in detection.nodules:
+                        st.markdown(f"""
+                        - **Nodule {nodule.nodule_id}**
+                          - Size: {nodule.size_mm:.1f}mm
+                          - Location: {nodule.location}
+                          - Type: {nodule.nodule_type}
+                          - Confidence: {nodule.confidence:.0%}
+                        """)
+                else:
+                    st.info("No nodules detected in this scan")
+
+    # Longitudinal analysis
+    if result.has_longitudinal and result.longitudinal_report:
+        st.markdown("---")
+        render_longitudinal_report(result.longitudinal_report, settings)
+
+    # Requires action indicator
+    if result.requires_action:
+        st.markdown("---")
+        st.error("""
+        ⚠️ **ACTION REQUIRED**
+
+        This analysis indicates findings that require further clinical evaluation.
+        Please review the recommendations below and consult with a radiologist.
+        """)
+
+    # Summary
+    summary = result.generate_summary() if hasattr(result, 'generate_summary') else None
+    if summary:
+        with st.expander("📄 JSON Summary"):
+            st.json(summary)
+
+
+def render_longitudinal_report(report, settings: dict):
+    """Render a longitudinal report (shared between modes)."""
+    analysis = report.analysis
+
+    st.markdown("### 📈 Longitudinal Change Analysis")
+
+    # Timeline
+    st.markdown("#### 📅 Measurement Timeline")
+    timeline_html = ""
+    for m in report.measurements:
+        date_str = m.date.strftime("%Y-%m-%d")
+        timeline_html += f'''
+        <div class="timeline-item">
+            <span class="timeline-date">{date_str}</span>
+            <span class="timeline-value">{m.size_mm}mm {m.nodule_type} nodule</span>
+        </div>
+        '''
+    st.markdown(timeline_html, unsafe_allow_html=True)
+
+    # Key metrics
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+            "Size Change",
+            f"+{analysis.size_change_mm:.1f}mm",
+            f"{analysis.size_change_percent:.1f}%"
+        )
+
+    with col2:
+        vdt_display = f"{analysis.volume_doubling_time_days:.0f} days" if analysis.volume_doubling_time_days else "N/A"
+        st.metric(
+            "Volume Doubling Time",
+            vdt_display,
+            "Concerning" if analysis.volume_doubling_time_days and analysis.volume_doubling_time_days < 400 else "Acceptable"
+        )
+
+    with col3:
+        lung_rads = analysis.lung_rads_current.value if analysis.lung_rads_current else "N/A"
+        st.metric("Lung-RADS", f"Category {lung_rads}")
+
+    # Risk level
+    st.markdown("#### ⚠️ Risk Assessment")
+    risk_class = {
+        RiskLevel.LOW: "risk-low",
+        RiskLevel.INTERMEDIATE: "risk-intermediate",
+        RiskLevel.HIGH: "risk-high",
+        RiskLevel.VERY_HIGH: "risk-very-high"
+    }.get(analysis.risk_level, "risk-intermediate")
+
+    risk_text = analysis.risk_level.value.upper().replace("_", " ")
+    st.markdown(f'<div class="{risk_class}">RISK LEVEL: {risk_text}</div>', unsafe_allow_html=True)
+
+    # Trajectory
+    st.markdown(f"**Trajectory:** {analysis.trajectory.value.title()}")
+
+    # Differential diagnosis
+    if report.differentials:
+        st.markdown("#### 🧠 Differential Diagnosis Evolution")
+        for diff in report.differentials:
+            if diff.prior_probability in ["low", "very low"] and diff.current_probability in ["high", "moderate"]:
+                card_class = "diff-increased"
+                arrow = "⬆️"
+            elif diff.prior_probability in ["high", "moderate"] and diff.current_probability in ["low", "very low"]:
+                card_class = "diff-decreased"
+                arrow = "⬇️"
+            else:
+                card_class = "diff-stable"
+                arrow = "➡️"
+
+            st.markdown(f'''
+            <div class="diff-card {card_class}">
+                <strong>{arrow} {diff.diagnosis}</strong><br>
+                <span style="color: #718096;">Prior: {diff.prior_probability} → Current: {diff.current_probability}</span><br>
+                <span style="font-size: 0.9rem; color: #4a5568;">{diff.rationale}</span>
+            </div>
+            ''', unsafe_allow_html=True)
+
+    # Recommendations
+    st.markdown("#### 💡 Recommendations")
+    for i, rec in enumerate(analysis.recommendations, 1):
+        st.markdown(f"{i}. {rec}")
+
+    # Clinical interpretation
+    if analysis.clinical_interpretation:
+        st.markdown("#### 📝 Clinical Interpretation")
+        st.info(analysis.clinical_interpretation)
+
+    # Visualizations
+    if VISUALIZATION_AVAILABLE:
+        st.markdown("#### 📊 Visualizations")
+        viz_col1, viz_col2 = st.columns(2)
+
+        with viz_col1:
+            try:
+                fig = create_timeline_chart(report.measurements, analysis)
+                st.pyplot(fig)
+            except Exception:
+                pass
+
+        with viz_col2:
+            try:
+                fig = create_growth_rate_chart(report.measurements)
+                st.pyplot(fig)
+            except Exception:
+                pass
+
+
 def render_demo_results(settings: dict):
     """Render demo results when pipeline not available."""
     st.markdown("---")
@@ -914,6 +1284,8 @@ def main():
         render_3d_analysis(settings)
     elif settings["mode"] == "Longitudinal Comparison":
         render_longitudinal_analysis(settings)
+    elif settings["mode"] == "CT Scan Series Upload":
+        render_ct_series_upload(settings)
 
     # Footer
     st.markdown("---")

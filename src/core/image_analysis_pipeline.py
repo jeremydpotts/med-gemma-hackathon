@@ -82,6 +82,37 @@ class PipelineResult:
             ]
         return False
 
+    def generate_summary(self) -> Dict[str, Any]:
+        """Generate a summary dictionary of the analysis."""
+        summary = {
+            "scans_analyzed": self.scans_processed,
+            "nodules_found": self.nodule_count,
+            "has_longitudinal_data": self.has_longitudinal,
+            "requires_action": self.requires_action,
+        }
+
+        if self.has_longitudinal and self.longitudinal_report:
+            analysis = self.longitudinal_report.analysis
+            summary.update({
+                "risk_level": analysis.risk_level.value,
+                "trajectory": analysis.trajectory.value,
+                "size_change_percent": f"{analysis.size_change_percent:.1f}%",
+                "volume_doubling_time": (
+                    f"{analysis.volume_doubling_time_days:.0f} days"
+                    if analysis.volume_doubling_time_days else "N/A"
+                ),
+                "lung_rads": (
+                    analysis.lung_rads_current.value
+                    if analysis.lung_rads_current else "N/A"
+                ),
+                "recommendations": analysis.recommendations,
+            })
+
+        if self.warnings:
+            summary["warnings"] = self.warnings
+
+        return summary
+
 
 class ImageAnalysisPipeline:
     """
