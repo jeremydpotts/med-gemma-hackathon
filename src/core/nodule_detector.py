@@ -42,6 +42,16 @@ class NoduleLocation(Enum):
 
 
 @dataclass
+class NoduleDetectorConfig:
+    """Configuration for nodule detection."""
+    min_nodule_size_mm: float = 3.0  # Minimum nodule size to report
+    confidence_threshold: float = 0.5  # Minimum confidence to include
+    model_name: str = "medgemma-1.5-4b"
+    use_3d_detection: bool = True
+    include_morphology: bool = True
+
+
+@dataclass
 class DetectedNodule:
     """
     Represents a detected nodule with measurements.
